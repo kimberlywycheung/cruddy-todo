@@ -39,8 +39,24 @@ const writeCounter = (count, callback) => {
 // Public API - Fix this function //////////////////////////////////////////////
 
 exports.getNextUniqueId = () => {
-  counter = counter + 1;
-  return zeroPaddedNumber(counter);
+  let currentCount = 0;
+
+  if (!fs.existsSync(exports.counterFile)) {
+    writeCounter(0, () => {});
+  }
+
+  readCounter((err, count) => {
+    writeCounter(count + 1, (err, newCount) => {
+      console.log('getNextUniqueId : ', newCount);
+      return newCount;
+    });
+  });
+};
+
+exports.initialize = () => {
+  if (!fs.existsSync(exports.dataDir)) {
+    fs.mkdirSync(exports.dataDir);
+  }
 };
 
 

@@ -9,8 +9,22 @@ var items = {};
 
 exports.create = (text, callback) => {
   var id = counter.getNextUniqueId();
-  items[id] = text;
-  callback(null, { id, text });
+  console.log('id: ', id);
+  // items[id] = text;
+  // callback(null, { id, text });
+
+  // create a new path for new to do item
+  let newFile = path.join(__dirname, 'data', id); // path name should be id
+  fs.mkdirSync(newFile);
+
+   // body should just be text
+   fs.writeFile(newFile, text, (err) => {
+    if (err) {
+      throw ('error writing to do item');
+    } else {
+      callback(null, text);
+    }
+  })
 };
 
 exports.readAll = (callback) => {
