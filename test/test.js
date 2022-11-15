@@ -208,12 +208,12 @@ describe('todos', () => {
       });
     });
 
-    it('should return an error for non-existant id', (done) => {
+    it('should return an error for non-existant id - delete case', (done) => {
       const initalTodoCount = fs.readdirSync(todos.dataDir).length;
       todos.delete('07829', (err) => {
         const currentTodoCount = fs.readdirSync(todos.dataDir).length;
         expect(currentTodoCount).to.equal(initalTodoCount);
-        expect(err).to.exist;
+        expect(err).to.exist
         done();
       });
     });

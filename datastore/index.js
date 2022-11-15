@@ -12,7 +12,8 @@ exports.create = (text, callback) => {
     let newFile = path.join(exports.dataDir, id + '.txt');
     fs.writeFile(newFile, text, (err) => {
       if (err) {
-        throw ('error writing to do item');
+        //throw ('error writing to do item');
+        callback(new Error('error writing to do item'));
       } else {
         callback(null, {id: id, text: text});
       }
@@ -51,28 +52,31 @@ exports.readOne = (id, callback) => {
 exports.update = (id, text, callback) => {
   const fileName = exports.dataDir + '/' + id + '.txt';
 
-  if (!fs.existsSync(fileName)) {
-    callback(new Error(`No item with id: ${id}`));
-  }
-
-  fs.writeFile(fileName, text, 'utf8', (err, data) => {
+  fs.open(fileName, (err) => {
     if (err) {
-      callback(new Error(`No item with id: ${id}`));
+      callback(err);
     } else {
-      callback(null, { id, text });
+      fs.writeFile(fileName, text, 'utf8', (err, data) => {
+        if (err) {
+          callback(err);
+        } else {
+          callback(null, { id, text });
+        }})
+      }
     }
-  });
+  )
 };
 
 exports.delete = (id, callback) => {
-  var item = items[id];
-  delete items[id];
-  if (!item) {
-    // report an error if item not found
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback();
-  }
+  const fileName = exports.dataDir + '/' + id + '.txt';
+
+  fs.unlink(fileName, (err) => {
+    if (err) {
+      callback(err);
+    } else {
+      callback();
+    }
+  })
 };
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
