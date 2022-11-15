@@ -49,13 +49,19 @@ exports.readOne = (id, callback) => {
 };
 
 exports.update = (id, text, callback) => {
-  var item = items[id];
-  if (!item) {
+  const fileName = exports.dataDir + '/' + id + '.txt';
+
+  if (!fs.existsSync(fileName)) {
     callback(new Error(`No item with id: ${id}`));
-  } else {
-    items[id] = text;
-    callback(null, { id, text });
   }
+
+  fs.writeFile(fileName, text, 'utf8', (err, data) => {
+    if (err) {
+      callback(new Error(`No item with id: ${id}`));
+    } else {
+      callback(null, { id, text });
+    }
+  });
 };
 
 exports.delete = (id, callback) => {
