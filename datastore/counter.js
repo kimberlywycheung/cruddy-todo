@@ -38,17 +38,18 @@ const writeCounter = (count, callback) => {
 
 // Public API - Fix this function //////////////////////////////////////////////
 
-exports.getNextUniqueId = () => {
-  let currentCount = 0;
-
+exports.getNextUniqueId = (callback) => {
   if (!fs.existsSync(exports.counterFile)) {
     writeCounter(0, () => {});
   }
 
   readCounter((err, count) => {
     writeCounter(count + 1, (err, newCount) => {
-      console.log('getNextUniqueId : ', newCount);
-      return newCount;
+      if (err) {
+        throw ('error getting next id');
+      } else {
+        callback(null, newCount);
+      }
     });
   });
 };

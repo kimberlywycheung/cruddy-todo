@@ -8,23 +8,17 @@ var items = {};
 // Public API - Fix these CRUD functions ///////////////////////////////////////
 
 exports.create = (text, callback) => {
-  var id = counter.getNextUniqueId();
-  console.log('id: ', id);
-  // items[id] = text;
-  // callback(null, { id, text });
+  counter.getNextUniqueId((err, id) => {
+    let newFile = path.join(exports.dataDir, id + '.txt');
 
-  // create a new path for new to do item
-  let newFile = path.join(__dirname, 'data', id); // path name should be id
-  fs.mkdirSync(newFile);
-
-   // body should just be text
-   fs.writeFile(newFile, text, (err) => {
-    if (err) {
-      throw ('error writing to do item');
-    } else {
-      callback(null, text);
-    }
-  })
+    fs.writeFile(newFile, text, (err) => {
+      if (err) {
+        throw ('error writing to do item');
+      } else {
+        callback(null, text);
+      }
+    })
+  });
 };
 
 exports.readAll = (callback) => {
