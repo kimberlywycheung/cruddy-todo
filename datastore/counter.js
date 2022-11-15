@@ -44,7 +44,7 @@ exports.getNextUniqueId = (callback) => {
   }
 
   readCounter((err, count) => {
-    writeCounter(count + 1, (err, newCount) => {
+    writeCounter(++count, (err, newCount) => {
       if (err) {
         throw ('error getting next id');
       } else {
