@@ -3,6 +3,8 @@ const path = require('path');
 const _ = require('underscore');
 const counter = require('./counter');
 
+var Promise = require('bluebird');
+
 var items = {};
 
 // Public API - Fix these CRUD functions ///////////////////////////////////////
@@ -22,20 +24,38 @@ exports.create = (text, callback) => {
 };
 
 exports.readAll = (callback) => {
-  var readAllArr = [];
 
-  fs.readdir(exports.dataDir, (err, files) => {
-    for (var i = 0; i < files.length; i++) {
-      var parseID = files[i].substring(0, files[i].length-4);
-      readAllArr.push({id: parseID, text: parseID});
-    }
+  const readdirPromised = Promise.promisifyAll(fs.readdir);
 
-    if (err) {
-      throw ('error reading all');
-    } else {
-      callback (null, readAllArr);
-    }
-  })
+  return readdirPromised(exports.dataDir)
+    .then((files) => {
+      console.log('files: ', files);
+      var readAllArr = [];
+      for (var i = 0; i < files.length; i++) {
+        var parseID = files[i].substring(0, files[i].length-4);
+        readAllArr.push({id: parseID, text: parseID});
+      }
+      callback(readAllArr);
+    })
+    .catch((err) => {
+      throw err;
+    });
+
+
+  // CALLBACK VERSION
+  // var readAllArr = [];
+  // fs.readdir(exports.dataDir, (err, files) => {
+  //   for (var i = 0; i < files.length; i++) {
+  //     var parseID = files[i].substring(0, files[i].length-4);
+  //     readAllArr.push({id: parseID, text: parseID});
+  //   }
+
+  //   if (err) {
+  //     throw ('error reading all');
+  //   } else {
+  //     callback (null, readAllArr);
+  //   }
+  // })
 };
 
 exports.readOne = (id, callback) => {
@@ -88,8 +108,3 @@ exports.initialize = () => {
     fs.mkdirSync(exports.dataDir);
   }
 };
-
-
-
-
-
